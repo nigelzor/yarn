@@ -1,8 +1,7 @@
 /* @flow */
 
-import type {RegistryNames} from './registries/index.js';
+import type {RegistryNames, ConfigRegistries} from './registries/index.js';
 import type {Reporter} from './reporters/index.js';
-import type Registry from './registries/base-registry.js';
 import type {Manifest, PackageRemote} from './types.js';
 import normalizeManifest from './util/normalize-manifest/index.js';
 import * as fs from './util/fs.js';
@@ -37,10 +36,6 @@ type PackageMetadata = {
   hash: string,
   remote: ?PackageRemote,
   package: Manifest
-};
-
-export type ConfigRegistries = {
-  [name: RegistryNames]: Registry
 };
 
 export default class Config {
