@@ -44,20 +44,19 @@ commander.option('--offline');
 commander.option('--prefer-offline');
 commander.option('--strict-semver');
 commander.option('--json', '');
-commander.option('--global-folder [path]', '');
+commander.option('--global-folder <path>', '');
 commander.option(
-  '--modules-folder [path]',
+  '--modules-folder <path>',
   'rather than installing modules into the node_modules folder relative to the cwd, output them here',
 );
 commander.option(
-  '--packages-root [path]',
-  'rather than storing modules into a global packages root, store them here',
+  '--cache-folder <path>',
+  'specify a custom folder to store the yarn cache',
 );
 commander.option(
-  '--mutex [type][:specifier]',
+  '--mutex <type>[:specifier]',
   'use a mutex to ensure only one yarn instance is executing',
 );
-commander.allowUnknownOption();
 
 // get command name
 let commandName: string = args.shift() || '';
@@ -288,9 +287,10 @@ const runEventuallyWithNetwork = (mutexPort: ?string): Promise<void> => {
 config.init({
   modulesFolder: commander.modulesFolder,
   globalFolder: commander.globalFolder,
-  packagesRoot: commander.packagesRoot,
+  cacheFolder: commander.cacheFolder,
   preferOffline: commander.preferOffline,
   captureHar: commander.har,
+  ignorePlatform: commander.ignorePlatform,
   ignoreEngines: commander.ignoreEngines,
   offline: commander.preferOffline || commander.offline,
   looseSemver: !commander.strictSemver,
@@ -300,7 +300,7 @@ config.init({
   };
 
   const mutex = commander.mutex;
-  if (mutex) {
+  if (mutex && typeof mutex === 'string') {
     const parts = mutex.split(':');
     const mutexType = parts.shift();
     const mutexSpecifier = parts.join(':');
@@ -333,8 +333,9 @@ config.init({
       logError(errs);
     }
 
-    if (commands[commandName]) {
-      reporter.info(getDocsInfo(commandName));
+    const actualCommandForHelp = commands[commandName] ? commandName : aliases[commandName];
+    if (actualCommandForHelp) {
+      reporter.info(getDocsInfo(actualCommandForHelp));
     }
   }
 
