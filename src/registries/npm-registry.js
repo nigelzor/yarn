@@ -54,7 +54,7 @@ export default class NpmRegistry extends Registry {
     const requestUrl = url.resolve(registry, pathname);
 
     const headers = {};
-    if (this.token || ((this.getOption('always-auth') || this.getScopedOption(registry.replace(/^https?:/, ''), 'always-auth')) && requestUrl.startsWith(registry))) {
+    if (this.token || ((this.getOption('always-auth') || this.getScopedOption(registry.replace(/^https?:/, ''), 'always-auth')) && url.parse(requestUrl).host === url.parse(registry).host)) {
       headers.authorization = this.getAuth(pathname);
     }
 
